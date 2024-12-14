@@ -1,6 +1,6 @@
 "use client";
 
-import { authToken } from "@/server/user";
+import { authToken } from "@/actions/user";
 import React, { createContext, useContext, useEffect } from "react";
 
 export const AuthContext = createContext();
@@ -24,7 +24,6 @@ export const AuthProvider = ({ children }) => {
     };
     isValidToken();
   }, []);
-
   return (
     <AuthContext.Provider value={{ user, isAuthenticated }}>
       {children}

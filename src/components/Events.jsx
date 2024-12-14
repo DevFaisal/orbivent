@@ -1,22 +1,23 @@
 "use client";
 
-import { getEvents } from "@/server/event";
+import { getEvents } from "@/actions/event";
 import React, { useState, useEffect } from "react";
 
 const Events = () => {
-  const [events, setEvents] = useState([]);
+  // const [events, setEvents] = useState([]);
 
-  useEffect(() => {
-    const getAllEvents = async () => {
-      const res = await getEvents();
-      setEvents(JSON.parse(res));
-    };
-    getAllEvents();
-  }, []);
+  // useEffect(() => {
+  //   const getAllEvents = async () => {
+  //     const res = await getEvents();
+  //     // setEvents(JSON.parse(res));
+  //   };
+  //   getAllEvents();
+  // }, []);
 
   return (
     <div className="space-y-4">
-      {events && events.length > 0 ? (
+      {/* {JSON.stringify(getEvents())} */}
+      {/* {events && events.length > 0 ? (
         events.map((event, idx) => (
           <div
             key={idx}
@@ -104,7 +105,7 @@ const Events = () => {
         ))
       ) : (
         <p className="text-center text-gray-500">No events found.</p>
-      )}
+      )} */}
     </div>
   );
 };

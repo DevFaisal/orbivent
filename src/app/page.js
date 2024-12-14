@@ -4,33 +4,6 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className="min-h-screen bg-white text-gray-800">
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <nav className="flex justify-between items-center">
-            <Image
-              src="/event.png"
-              alt="Orbivent Logo"
-              width={40}
-              height={32}
-            />
-            <div className="space-x-4">
-              <Link
-                href="/login"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                Login
-              </Link>
-              <Link
-                href="/signup"
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-              >
-                Sign Up
-              </Link>
-            </div>
-          </nav>
-        </div>
-      </header>
-
       <main>
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-blue-50 to-indigo-100 py-20">

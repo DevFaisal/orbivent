@@ -1,5 +1,5 @@
 import React from "react";
-import { createUser } from "@/server/user";
+import { createUser } from "@/actions/user";
 import { useForm } from "react-hook-form";
 
 const UserRegister = () => {
