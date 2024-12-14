@@ -1,10 +1,11 @@
 import React from "react";
 import CreateEventForm from "./CreateEventForm";
-import { PlusCircle, Calendar, Settings } from "lucide-react";
+import { PlusCircle, Calendar } from "lucide-react";
+import Link from "next/link";
 
 const AdminPage = () => {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <main className="max-h-screen bg-gradient-to-br from-blue-50 to-indigo-100  py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <header className="mb-12 text-center">
           <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
@@ -15,7 +16,6 @@ const AdminPage = () => {
             location.
           </p>
         </header>
-
         <div className="grid md:grid-cols-3 gap-8">
           <div className="md:col-span-2 bg-white rounded-2xl shadow-xl overflow-hidden">
             <div className="px-6 py-8 sm:p-10 sm:pb-6">
@@ -33,7 +33,6 @@ const AdminPage = () => {
               <CreateEventForm />
             </div>
           </div>
-
           <div className="space-y-8">
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
               <div className="px-6 py-8 sm:p-10">
@@ -47,26 +46,11 @@ const AdminPage = () => {
                 <p className="text-gray-500">
                   View and manage your upcoming events
                 </p>
-                <button className="mt-6 w-full bg-indigo-50 text-indigo-600 py-2 px-4 rounded-lg font-medium hover:bg-indigo-100 transition-colors duration-300">
-                  View All Events
-                </button>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
-              <div className="px-6 py-8 sm:p-10">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-gray-900 flex items-center">
-                    <Settings className="w-5 h-5 mr-2 text-indigo-500" />
-                    Account Settings
-                  </h3>
-                </div>
-                <p className="text-gray-500">
-                  Manage your account preferences and settings
-                </p>
-                <button className="mt-6 w-full bg-indigo-50 text-indigo-600 py-2 px-4 rounded-lg font-medium hover:bg-indigo-100 transition-colors duration-300">
-                  Go to Settings
-                </button>
+                <Link href={"/admin/events"}>
+                  <button className="mt-6 w-full bg-indigo-50 text-indigo-600 py-2 px-4 rounded-lg font-medium hover:bg-indigo-100 transition-colors duration-300">
+                    View All Events
+                  </button>
+                </Link>
               </div>
             </div>
           </div>

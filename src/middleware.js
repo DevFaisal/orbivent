@@ -3,8 +3,8 @@ import { cookies } from "next/headers";
 import { decrypt } from "./lib/session";
 
 const publicRoutes = ["/", "/signup", "/login"];
-const userRoutes = ["/user"];
-const adminRoutes = ["/admin"];
+const userRoutes = ["/user", "/enrolled-events"];
+const adminRoutes = ["/admin", "/admin/events"];
 
 export async function middleware(request) {
   const path = request.nextUrl.pathname;

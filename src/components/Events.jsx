@@ -1,113 +1,224 @@
 "use client";
-
 import { getEvents } from "@/actions/event";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Users,
+  Search,
+  Filter,
+  X,
+} from "lucide-react";
+import { format } from "date-fns";
+import Link from "next/link";
 
 const Events = () => {
-  // const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [search, setSearch] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [sortBy, setSortBy] = useState("date");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // useEffect(() => {
-  //   const getAllEvents = async () => {
-  //     const res = await getEvents();
-  //     // setEvents(JSON.parse(res));
-  //   };
-  //   getAllEvents();
-  // }, []);
+  useEffect(() => {
+    const getAllEvents = async () => {
+      try {
+        setIsLoading(true);
+        const res = await getEvents();
+        setEvents(JSON.parse(res));
+      } catch (err) {
+        setError("Failed to fetch events. Please try again later.");
+        console.error("Error fetching events:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getAllEvents();
+  }, []);
+
+  const filteredAndSortedEvents = useMemo(() => {
+    return events
+      .filter((event) => {
+        const searchLower = search.toLowerCase();
+        const matchesSearch =
+          event.name.toLowerCase().includes(searchLower) ||
+          event.description.toLowerCase().includes(searchLower) ||
+          event.venue.toLowerCase().includes(searchLower);
+        const matchesDate =
+          !dateFilter || new Date(event.date) >= new Date(dateFilter);
+        const matchesStatus = !statusFilter || event.status === statusFilter;
+        return matchesSearch && matchesDate && matchesStatus;
+      })
+      .sort((a, b) => {
+        if (sortBy === "date") {
+          return new Date(a.date) - new Date(b.date);
+        } else if (sortBy === "name") {
+          return a.name.localeCompare(b.name);
+        }
+        return 0;
+      });
+  }, [events, search, dateFilter, statusFilter, sortBy]);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} />;
+  }
 
   return (
-    <div className="space-y-4">
-      {/* {JSON.stringify(getEvents())} */}
-      {/* {events && events.length > 0 ? (
-        events.map((event, idx) => (
-          <div
-            key={idx}
-            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-          >
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4">
-              <h2 className="text-xl font-semibold truncate">{event.name}</h2>
-            </div>
-            <div className="p-4">
-              <p className="text-gray-600 mb-4 line-clamp-2">
-                {event.description}
-              </p>
-              <div className="grid grid-cols-2 gap-2 text-sm mb-4">
-                <p className="flex items-center">
-                  <svg
-                    className="w-4 h-4 mr-2 text-gray-500"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                  </svg>
-                  {new Date(event.date).toLocaleDateString()}
-                </p>
-                <p className="flex items-center">
-                  <svg
-                    className="w-4 h-4 mr-2 text-gray-500"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  {event.time}
-                </p>
-                <p className="flex items-center col-span-2">
-                  <svg
-                    className="w-4 h-4 mr-2 text-gray-500"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                    <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  </svg>
-                  {event.venue}
-                </p>
-              </div>
-              <div className="flex justify-between items-center">
-                <p className="text-sm flex items-center">
-                  <svg
-                    className="w-4 h-4 mr-2 text-gray-500"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                  </svg>
-                  Limit: {event.registrationLimit}
-                </p>
-                <span
-                  className={`text-sm font-semibold px-3 py-1 rounded-full ${
-                    event.status === "Open"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {event.status}
-                </span>
-              </div>
-            </div>
+    <div className="space-y-6">
+      <div className="bg-white p-4 rounded-lg shadow-md">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search events..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={18}
+            />
           </div>
-        ))
-      ) : (
-        <p className="text-center text-gray-500">No events found.</p>
-      )} */}
+          <input
+            type="date"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">All Statuses</option>
+            <option value="Open">Open</option>
+            <option value="Closed">Closed</option>
+          </select>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="date">Sort by Date</option>
+            <option value="name">Sort by Name</option>
+          </select>
+        </div>
+        {(search || dateFilter || statusFilter) && (
+          <div className="mt-4 flex items-center flex-wrap">
+            <Filter size={18} className="text-gray-400 mr-2" />
+            <span className="text-sm text-gray-600 mr-2">Active filters:</span>
+            {search && (
+              <FilterTag
+                label={`Search: ${search}`}
+                onClear={() => setSearch("")}
+              />
+            )}
+            {dateFilter && (
+              <FilterTag
+                label={`Date: ${format(new Date(dateFilter), "MMM d, yyyy")}`}
+                onClear={() => setDateFilter("")}
+              />
+            )}
+            {statusFilter && (
+              <FilterTag
+                label={`Status: ${statusFilter}`}
+                onClear={() => setStatusFilter("")}
+              />
+            )}
+          </div>
+        )}
+      </div>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {filteredAndSortedEvents.length > 0 ? (
+          filteredAndSortedEvents.map((event) => (
+            <Link key={event._id} href={`/event/${event._id}`}>
+              <EventCard key={event._id} event={event} />
+            </Link>
+          ))
+        ) : (
+          <p className="text-center text-gray-500 py-8 col-span-full">
+            No events found.
+          </p>
+        )}
+      </div>
     </div>
   );
 };
+
+const EventCard = ({ event }) => (
+  <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+    <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-4 px-6">
+      <h2 className="text-xl font-bold truncate">{event.name}</h2>
+    </div>
+    <div className="p-6">
+      <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
+      <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+        <EventDetail
+          icon={<Calendar className="w-4 h-4" />}
+          text={format(new Date(event.date), "MMM d, yyyy")}
+        />
+        <EventDetail icon={<Clock className="w-4 h-4" />} text={event.time} />
+        <EventDetail
+          icon={<MapPin className="w-4 h-4" />}
+          text={event.venue}
+          className="col-span-2"
+        />
+      </div>
+      <div className="flex justify-between items-center">
+        <EventDetail
+          icon={<Users className="w-4 h-4" />}
+          text={`Limit: ${event.registrationLimit}`}
+        />
+        <span
+          className={`text-sm font-semibold px-3 py-1 rounded-full ${
+            event.status === "Open"
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
+          }`}
+        >
+          {event.status}
+        </span>
+      </div>
+    </div>
+  </div>
+);
+
+const EventDetail = ({ icon, text, className = "" }) => (
+  <p className={`flex items-center ${className}`}>
+    <span className="mr-2 text-gray-500">{icon}</span>
+    {text}
+  </p>
+);
+
+const FilterTag = ({ label, onClear }) => (
+  <span className="inline-flex items-center bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">
+    {label}
+    <button
+      onClick={onClear}
+      className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none"
+    >
+      <X size={14} />
+    </button>
+  </span>
+);
+
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center py-12">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+);
+
+const ErrorMessage = ({ message }) => (
+  <div className="text-center py-12">
+    <p className="text-red-500 font-semibold">{message}</p>
+  </div>
+);
 
 export default Events;

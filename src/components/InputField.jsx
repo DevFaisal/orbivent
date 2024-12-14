@@ -1,6 +1,14 @@
 import React from "react";
 
-const InputField = ({ label, name, type, placeholder, register, error }) => {
+const InputField = ({
+  label,
+  name,
+  type,
+  placeholder,
+  className,
+  error,
+  onChange,
+}) => {
   return (
     <div className="mb-4">
       <label
@@ -15,9 +23,9 @@ const InputField = ({ label, name, type, placeholder, register, error }) => {
           name={name}
           type={type}
           placeholder={placeholder}
-          {...register}
-          className={`
-            w-full px-4 py-2 text-gray-700 bg-white border rounded-lg
+          onChange={onChange}
+          className={`${className}
+            w-full  px-4 py-2 text-gray-700 bg-white border rounded-lg
             transition-all duration-200 ease-in-out
             focus:outline-none focus:ring-2 focus:ring-opacity-50
             ${

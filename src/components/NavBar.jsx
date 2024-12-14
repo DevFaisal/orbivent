@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const NavBar = () => {
   const [userRole, setUserRole] = useState("public");
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -41,7 +40,7 @@ const NavBar = () => {
         return (
           <>
             <NavLink href="/admin">Dashboard</NavLink>
-            <NavLink href="/events">Events</NavLink>
+            <NavLink href="/admin/events">Events</NavLink>
             <button
               onClick={handleLogout}
               className="text-gray-600 hover:text-red-600 transition-colors"
@@ -53,8 +52,8 @@ const NavBar = () => {
       case "user":
         return (
           <>
-            <NavLink href="/dashboard">Dashboard</NavLink>
-            <NavLink href="/enrolled-events">Enrolled Events</NavLink>
+            <NavLink href="/user">Dashboard</NavLink>
+            <NavLink href="/user/enrolled-events">Enrolled Events</NavLink>
             <button
               onClick={handleLogout}
               className="text-gray-600 hover:text-red-600 transition-colors"
