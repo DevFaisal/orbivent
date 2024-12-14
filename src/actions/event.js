@@ -32,7 +32,23 @@ export async function getEvents() {
     console.log(error);
   }
 }
-
+export async function getEvent(id) {
+  try {
+    const event = await Event.findById({
+      _id: id,
+    });
+    if (!event) {
+      return {
+        errors: {
+          name: "Event not found",
+        },
+      };
+    }
+    return JSON.stringify(event);
+  } catch (error) {
+    console.log(error);
+  }
+}
 export async function deleteEvent(id) {
   try {
     const event = await Event.findByIdAndDelete(id);

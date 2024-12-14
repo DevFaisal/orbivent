@@ -138,7 +138,7 @@ const Events = () => {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filteredAndSortedEvents.length > 0 ? (
           filteredAndSortedEvents.map((event) => (
-            <Link key={event._id} href={`/event/${event._id}`}>
+            <Link key={event._id} href={`/user/register-event/${event._id}`}>
               <EventCard key={event._id} event={event} />
             </Link>
           ))
