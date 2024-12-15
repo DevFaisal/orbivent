@@ -2,10 +2,11 @@
 
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
-import { getEvent } from "@/actions/event";
+import { eventRegistration, getEvent } from "@/actions/event";
 import { format } from "date-fns";
 import Image from "next/image";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const EventRegistration = ({ params }) => {
   const eventId = use(params).id;
@@ -14,6 +15,7 @@ const EventRegistration = ({ params }) => {
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchEventDetail = async () => {
@@ -34,8 +36,12 @@ const EventRegistration = ({ params }) => {
     setIsSubmitting(true);
 
     try {
-      // Here you would typically make an API call to register the user
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const { success, errors } = await eventRegistration(user._id, eventId);
+      if (!success) {
+        setError(errors.name);
+        setIsSubmitting(false);
+        return;
+      }
       router.push(`/registration-confirmation/${eventId}`);
     } catch (err) {
       setError("Failed to register. Please try again.");

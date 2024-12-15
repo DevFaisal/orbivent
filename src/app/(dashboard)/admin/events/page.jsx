@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteEvent, getEvents } from "@/actions/event";
+import { deleteEvent, getEvents, updateEventStatus } from "@/actions/event";
 import React, { useEffect, useState } from "react";
 
 const EventPage = () => {
@@ -11,7 +11,7 @@ const EventPage = () => {
     const fetchEvents = async () => {
       try {
         const eventData = await getEvents();
-        setEvents(JSON.parse(eventData));
+        setEvents(JSON.parse(eventData) || []);
       } catch (error) {
         console.error("Failed to fetch events:", error);
       } finally {
@@ -55,6 +55,20 @@ const Event = ({ event, onDelete }) => {
     }
   };
 
+  const handleUpdateStatus = async (event) => {
+    const res = confirm(
+      `Are you sure you want to change the status of ${event.name} event to ${
+        event.status === "Open" ? "Closed" : "Open"
+      }?`
+    );
+
+    if (res) {
+      const response = await updateEventStatus(event._id);
+      console.log(response);
+    }
+    window.location.reload();
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-6">
@@ -79,16 +93,14 @@ const Event = ({ event, onDelete }) => {
             icon="users"
             text={`Limit: ${event.registrationLimit}`}
           />
-          <span
-            className={`text-sm font-semibold px-3 py-1 rounded-full ${
-              event.status === "Open"
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
-            }`}
-          >
-            {event.status}
-          </span>
+          <div>
+            <ToggleButton
+              status={event.status}
+              onClick={() => handleUpdateStatus(event)}
+            />
+          </div>
         </div>
+
         <button
           onClick={handleDelete}
           disabled={isDeleting}
@@ -119,6 +131,32 @@ const EventDetail = ({ icon, text, className = "" }) => (
     {text}
   </p>
 );
+
+const ToggleButton = ({ status, onClick }) => {
+  return (
+    <>
+      <label className="inline-flex items-center cursor-pointer">
+        <input
+          type="checkbox"
+          defaultChecked={status === "Open"}
+          value={status}
+          className="sr-only peer"
+          onClick={onClick}
+        />
+        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+        <span
+          className={`text-sm font-semibold px-3 py-1 rounded-full ${
+            status === "Open"
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
+          }`}
+        >
+          {status}
+        </span>
+      </label>
+    </>
+  );
+};
 
 const getIconPath = (icon) => {
   switch (icon) {
