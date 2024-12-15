@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Facebook, Twitter, Github } from "lucide-react";
 
-// Reusable components for cleaner code
+
 const FeatureCard = ({ icon, title, description }) => {
   return (
     <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">

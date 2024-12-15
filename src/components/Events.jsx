@@ -7,9 +7,9 @@ import {
   Filter,
   X,
 } from "lucide-react";
-import { format } from "date-fns";
 import Link from "next/link";
 import EventCard from "./EventCard";
+import moment from "moment";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -120,7 +120,7 @@ const Events = () => {
             )}
             {dateFilter && (
               <FilterTag
-                label={`Date: ${format(new Date(dateFilter), "MMM d, yyyy")}`}
+                label={`Date: ${moment(dateFilter).format("MMM D, YYYY")}`}
                 onClear={() => setDateFilter("")}
               />
             )}

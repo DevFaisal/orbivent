@@ -1,6 +1,6 @@
 "use client";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
-import { format } from "date-fns";
+import moment from "moment";
 
 const EventCard = ({ event }) => (
   <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
@@ -12,7 +12,7 @@ const EventCard = ({ event }) => (
       <div className="grid grid-cols-2 gap-4 text-sm mb-6">
         <EventDetail
           icon={<Calendar className="w-4 h-4" />}
-          text={format(new Date(event.date), "MMM d, yyyy")}
+          text={moment(event.date).format("MMMM D, YYYY")}
         />
         <EventDetail icon={<Clock className="w-4 h-4" />} text={event.time} />
         <EventDetail

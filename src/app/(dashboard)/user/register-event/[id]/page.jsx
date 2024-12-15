@@ -1,12 +1,11 @@
 "use client";
-
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { eventRegistration, getEvent } from "@/actions/event";
-import { format } from "date-fns";
 import Image from "next/image";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import moment from "moment";
 
 const EventRegistration = ({ params }) => {
   const eventId = use(params).id;
@@ -42,7 +41,7 @@ const EventRegistration = ({ params }) => {
         setIsSubmitting(false);
         return;
       }
-      router.push(`/registration-confirmation/${eventId}`);
+      router.push(`/registration-confirmation`);
     } catch (err) {
       setError("Failed to register. Please try again.");
       setIsSubmitting(false);
@@ -97,7 +96,7 @@ const EventRegistration = ({ params }) => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center">
                   <Calendar className="mr-2 text-blue-500" />
-                  <span>{format(new Date(event.date), "MMMM d, yyyy")}</span>
+                  <span>{moment(event.date).format("MMMM D, YYYY")}</span>
                 </div>
                 <div className="flex items-center">
                   <Clock className="mr-2 text-blue-500" />
