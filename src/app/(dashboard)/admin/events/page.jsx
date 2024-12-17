@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteEvent, getEvents, updateEventStatus } from "@/actions/event";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const EventPage = () => {
@@ -27,7 +28,9 @@ const EventPage = () => {
         Upcoming Events
       </h1>
       {isLoading ? (
-        <p>Loading...</p>
+        <div className="flex items-center justify-center h-64">
+          <p className="text-gray-600 text-center">Loading events...</p>
+        </div>
       ) : (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {events.map((event) => (
@@ -41,12 +44,14 @@ const EventPage = () => {
 
 const Event = ({ event, onDelete }) => {
   const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
 
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this event?")) {
       setIsDeleting(true);
       try {
         await onDelete(event._id);
+        window.location.reload();
       } catch (error) {
         console.error("Failed to delete event:", error);
       } finally {
@@ -67,6 +72,10 @@ const Event = ({ event, onDelete }) => {
       console.log(response);
     }
     window.location.reload();
+  };
+
+  const handleEventDetails = (id) => () => {
+    router.push(`/admin/events/event-details/${id}`);
   };
 
   return (
@@ -100,16 +109,23 @@ const Event = ({ event, onDelete }) => {
             />
           </div>
         </div>
-
-        <button
-          onClick={handleDelete}
-          disabled={isDeleting}
-          className={`w-full py-2 px-4 bg-red-500 text-white rounded hover:bg-red-600 transition-colors ${
-            isDeleting ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-        >
-          {isDeleting ? "Deleting..." : "Delete Event"}
-        </button>
+        <div className="flex space-x-4">
+          <button
+            onClick={handleEventDetails(event._id)}
+            className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Event Details
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className={`w-full py-2 px-4 bg-red-500 text-white rounded hover:bg-red-600 transition-colors ${
+              isDeleting ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            {isDeleting ? "Deleting..." : "Delete Event"}
+          </button>
+        </div>
       </div>
     </div>
   );

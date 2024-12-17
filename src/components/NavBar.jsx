@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -8,13 +8,14 @@ import { logoutUser } from "@/actions/user";
 import { useAuth } from "@/context/AuthContext";
 
 const NavBar = () => {
-  const [userRole, setUserRole] = useState("public");
-  const { user } = useAuth();
+  const [userRole, setUserRole] = useState("");
+  const { user, isAuthenticated } = useAuth();
   const pathname = usePathname();
 
   useEffect(() => {
-    setUserRole(user?.role || "public");
-  }, [user]);
+    console.log("rendered");
+    setUserRole(user?.role);
+  }, [isAuthenticated]);
 
   const handleLogout = async () => {
     await logoutUser();
@@ -63,7 +64,7 @@ const NavBar = () => {
             </button>
           </>
         );
-      default:
+      case "public":
         return (
           <>
             <NavLink href="/login">Login</NavLink>
@@ -75,6 +76,15 @@ const NavBar = () => {
             >
               Sign Up
             </Link>
+          </>
+        );
+      default:
+        return (
+          <>
+            <span className="flex space-x-6">
+              <p className="h-[30px] w-[100px] bg-gray-100 animate-pulse"></p>
+              <p className="h-[30px] w-[100px] bg-gray-100 animate-pulse"></p>
+            </span>
           </>
         );
     }

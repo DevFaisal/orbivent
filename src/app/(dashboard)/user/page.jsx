@@ -1,11 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Calendar, Bell, User } from "lucide-react";
 import Events from "@/components/Events";
 import { useAuth } from "@/context/AuthContext";
 
 const UserPage = () => {
   const { user } = useAuth();
+
   return (
     <div className="max-h-screen min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">

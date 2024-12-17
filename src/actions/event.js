@@ -1,5 +1,6 @@
 "use server";
 import Event from "@/models/event";
+import User from "@/models/user";
 import { Validation } from "@/lib/zod";
 import { revalidatePath } from "next/cache";
 import EventRegistration from "@/models/eventRegistration";
@@ -23,6 +24,14 @@ export async function createEvent(previousState, formData) {
     };
   }
   revalidatePath("/admin");
+}
+export async function getNumberOfEvents() {
+  try {
+    const events = await Event.find({});
+    return events.length;
+  } catch (error) {
+    console.log(error);
+  }
 }
 export async function getEvents() {
   try {
@@ -100,7 +109,7 @@ export async function eventRegistration(userId, eventId) {
       },
     };
   }
-  if (event.participants.length >= event.maxParticipants) {
+  if (event.participants.length >= event.registrationLimit) {
     return {
       errors: {
         name: "Event full",
@@ -108,7 +117,17 @@ export async function eventRegistration(userId, eventId) {
     };
   }
   Promise.all([
-    Event.updateOne({ _id: eventId }, { $push: { participants: userId } }),
+    Event.updateOne(
+      { _id: eventId },
+      {
+        $push: {
+          participants: userId,
+        },
+        $inc: {
+          participantsCount: 1,
+        },
+      }
+    ),
     EventRegistration.create({ event: eventId, user: userId }),
   ]);
   return {
@@ -118,13 +137,73 @@ export async function eventRegistration(userId, eventId) {
 export async function getEnrolledEvents({ userId }) {
   try {
     const registration = await EventRegistration.find({ user: userId });
+    if (registration.length === 0) {
+      return {
+        errors: {
+          name: "No registration found",
+        },
+      };
+    }
     const events = await Promise.all(
-      registration.map(async (reg) => {
-        return await Event.findById(reg.event);
-      })
+      registration
+        .map(async (reg) => {
+          return await Event.findById(reg.event);
+        })
+        .filter((event) => event !== null)
     );
+    if (events.length === 0) {
+      return {
+        errors: {
+          name: "No events found",
+        },
+      };
+    }
     return JSON.stringify(events);
   } catch (error) {
     console.log(error);
   }
+}
+export async function getEventDetailsForAdmin(id) {
+  try {
+    const event = await Event.findById(id);
+    if (!event) {
+      return {
+        errors: {
+          name: "Event not found",
+        },
+      };
+    }
+    const registration = await EventRegistration.find({ event: id });
+    const users = await Promise.all(
+      registration.map(async (reg) => {
+        return await User.findById(reg.user);
+      })
+    );
+    return JSON.stringify({ event, users });
+  } catch (error) {}
+}
+
+export async function deleteEventRegistration(userId, eventId) {
+  try {
+    const res = await Promise.all([
+      Event.findByIdAndUpdate(eventId, {
+        $pull: { participants: userId },
+        $inc: { participantsCount: -1 },
+      }),
+      EventRegistration.deleteOne({
+        event: eventId,
+        user: userId,
+      }),
+    ]);
+    if (!res) {
+      return {
+        errors: {
+          name: "Event registration not found",
+        },
+      };
+    }
+    return {
+      success: true,
+    };
+  } catch (error) {}
 }

@@ -2,6 +2,7 @@ import React from "react";
 import CreateEventForm from "./CreateEventForm";
 import { PlusCircle, Calendar } from "lucide-react";
 import Link from "next/link";
+import { getNumberOfEvents } from "@/actions/event";
 
 const AdminPage = () => {
   return (
@@ -41,7 +42,9 @@ const AdminPage = () => {
                     <Calendar className="w-5 h-5 mr-2 text-indigo-500" />
                     Upcoming Events
                   </h3>
-                  <span className="text-2xl font-bold text-indigo-600">12</span>
+                  <span className="text-2xl font-bold text-indigo-600">
+                    {getNumberOfEvents() || 0}
+                  </span>
                 </div>
                 <p className="text-gray-500">
                   View and manage your upcoming events

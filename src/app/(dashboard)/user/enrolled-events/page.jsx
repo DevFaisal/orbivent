@@ -12,16 +12,22 @@ const RegisterEvent = () => {
   useEffect(() => {
     const fetchEnrolledEvents = async () => {
       const result = await getEnrolledEvents({ userId });
-      setEnrolledEvents(JSON.parse(result) || []);
+      setEnrolledEvents(JSON.parse(result));
     };
     fetchEnrolledEvents();
-  }, [userId]);
-
+  }, []);
+console.log(enrolledEvents)
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-10">
-      {enrolledEvents.map((event) => (
-        <EventCard key={event._id} event={event} />
-      ))}
+      {enrolledEvents.length == 0 ? (
+        <div className="flex justify-center items-center h-96 w-screen">
+          <p className="text-gray-500 text-2xl">No events found</p>
+        </div>
+      ) : (
+        enrolledEvents.map((event, idx) => (
+          <EventCard key={idx} event={event} />
+        ))
+      )}
     </div>
   );
 };

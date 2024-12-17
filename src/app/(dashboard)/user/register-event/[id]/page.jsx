@@ -41,7 +41,7 @@ const EventRegistration = ({ params }) => {
         setIsSubmitting(false);
         return;
       }
-      router.push(`/registration-confirmation`);
+      router.push(`/user/register-event/${eventId}/success`);
     } catch (err) {
       setError("Failed to register. Please try again.");
       setIsSubmitting(false);
