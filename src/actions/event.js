@@ -182,7 +182,6 @@ export async function getEventDetailsForAdmin(id) {
     return JSON.stringify({ event, users });
   } catch (error) {}
 }
-
 export async function deleteEventRegistration(userId, eventId) {
   try {
     const res = await Promise.all([
